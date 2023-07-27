@@ -1,0 +1,282 @@
+import java.awt.EventQueue;
+import java.sql.*;
+
+import net.proteanit.sql.DbUtils;
+import javax.swing.JOptionPane;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import java.awt.Font;
+import javax.swing.JPanel;
+import javax.swing.border.TitledBorder;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JTable;
+import javax.swing.JScrollPane;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+public class JavaCrud {
+
+	private JFrame frame;
+	private JTextField txtproduct;
+	private JTextField txtsrno;
+	private JTextField txtquality;
+	private JTable table;
+	private JTextField txtid;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					JavaCrud window = new JavaCrud();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public JavaCrud() {
+		initialize();
+		Connect();
+		table_load();
+		}
+	
+	Connection con;
+	PreparedStatement pst;
+	ResultSet rs;
+	 
+	public void Connect()
+	    {
+	        try {
+	            Class.forName("com.mysql.jdbc.Driver");
+	            con = DriverManager.getConnection("jdbc:mysql://localhost/javacrud", "root","");
+	        }
+	        catch (ClassNotFoundException ex)
+	        {
+	        
+	        }
+	        catch (SQLException ex)
+	        {
+	           
+	        }
+	 
+	    }
+	
+	
+	
+
+	  public void table_load()
+	    {
+	     try
+	     {
+	    pst = con.prepareStatement("select * from form");
+	    rs = pst.executeQuery();
+	    table.setModel(DbUtils.resultSetToTableModel(rs));
+	}
+	     catch (SQLException e)
+	     {
+	     e.printStackTrace();
+	  }
+	    }
+	
+	  
+	  
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 985, 672);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JLabel lblNewLabel = new JLabel("REGISTRATION FORM");
+		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 30));
+		lblNewLabel.setBounds(32, 10, 425, 48);
+		frame.getContentPane().add(lblNewLabel);
+		
+		JPanel panel = new JPanel();
+		panel.setBorder(new TitledBorder(null, "DATA ENTRY", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel.setBounds(10, 80, 471, 300);
+		frame.getContentPane().add(panel);
+		panel.setLayout(null);
+		
+		JLabel lblNewLabel_1 = new JLabel("PRODUCT");
+		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 20));
+		lblNewLabel_1.setBounds(10, 47, 110, 32);
+		panel.add(lblNewLabel_1);
+		
+		JLabel lblNewLabel_1_1 = new JLabel("SRNO");
+		lblNewLabel_1_1.setFont(new Font("Tahoma", Font.BOLD, 20));
+		lblNewLabel_1_1.setBounds(10, 120, 110, 32);
+		panel.add(lblNewLabel_1_1);
+		
+		JLabel lblNewLabel_1_2 = new JLabel("QUALITY");
+		lblNewLabel_1_2.setFont(new Font("Tahoma", Font.BOLD, 20));
+		lblNewLabel_1_2.setBounds(10, 193, 110, 32);
+		panel.add(lblNewLabel_1_2);
+		
+		txtproduct = new JTextField();
+		txtproduct.setBounds(161, 46, 209, 32);
+		panel.add(txtproduct);
+		txtproduct.setColumns(10);
+		
+		txtsrno = new JTextField();
+		txtsrno.setColumns(10);
+		txtsrno.setBounds(161, 120, 209, 32);
+		panel.add(txtsrno);
+		
+		txtquality = new JTextField();
+		txtquality.setColumns(10);
+		txtquality.setBounds(161, 193, 209, 32);
+		panel.add(txtquality);
+		
+		JButton btnNewButton = new JButton("SAVE");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				String product,srno,quality;
+				
+				product = txtproduct.getText();
+				srno = txtsrno.getText();
+				quality = txtquality.getText();
+				
+				try {
+					pst = con.prepareStatement("insert into form(product,srno,quality)values(?,?,?)");
+					pst.setString(1, product);
+					pst.setString(2, srno);
+					pst.setString(3, quality);
+					pst.executeUpdate();
+					JOptionPane.showMessageDialog(null, "Record Addedddd!!!!!");
+					table_load();
+					
+					          
+					txtproduct.setText("");
+					txtsrno.setText("");
+					txtquality.setText("");
+					txtproduct.requestFocus();
+					   }
+					 
+					catch (SQLException e1)
+					        {
+					e1.printStackTrace();
+					}
+				
+				
+				}
+		});
+		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnNewButton.setBounds(10, 390, 150, 48);
+		frame.getContentPane().add(btnNewButton);
+		
+		JButton btnExit = new JButton("EXIT");
+		btnExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnExit.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnExit.setBounds(170, 390, 150, 48);
+		frame.getContentPane().add(btnExit);
+		
+		JButton btnClear = new JButton("CLEAR");
+		btnClear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnClear.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnClear.setBounds(331, 390, 150, 48);
+		frame.getContentPane().add(btnClear);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(490, 79, 459, 435);
+		frame.getContentPane().add(scrollPane);
+		
+		table = new JTable();
+		scrollPane.setViewportView(table);
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new TitledBorder(null, "SEARCH", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_1.setBounds(10, 463, 466, 146);
+		frame.getContentPane().add(panel_1);
+		panel_1.setLayout(null);
+		
+		JLabel lblNewLabel_1_1_1 = new JLabel("ID");
+		lblNewLabel_1_1_1.setFont(new Font("Tahoma", Font.BOLD, 20));
+		lblNewLabel_1_1_1.setBounds(49, 45, 110, 51);
+		panel_1.add(lblNewLabel_1_1_1);
+		
+		txtid = new JTextField();
+		txtid.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				
+      try {
+					          
+					            String id = txtid.getText();
+					 
+					                pst = con.prepareStatement("select product,srno,qualiy from form where id = ?");
+					                pst.setString(1, id);
+					                ResultSet rs = pst.executeQuery();
+					 
+					            if(rs.next()==true)
+					            {
+					              
+					                String product = rs.getString(1);
+					                String srno = rs.getString(2);
+					                String quality = rs.getString(3);
+					                
+					                txtproduct.setText(product);
+					                txtsrno.setText(srno);
+					                txtquality.setText(quality);
+					                
+					                
+					            } 
+					            else
+					            {
+					             txtproduct.setText("");
+					             txtsrno.setText("");
+					             txtquality.setText("");
+					                
+					            }
+					            
+					 
+					 
+					        }
+					catch (SQLException ex) {
+					          
+					        }
+					}
+				
+				
+				
+				
+				
+				
+			}
+		});
+		txtid.setColumns(10);
+		txtid.setBounds(180, 44, 209, 62);
+		panel_1.add(txtid);
+		
+		JButton btnUpdate = new JButton("UPDATE");
+		btnUpdate.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnUpdate.setBounds(530, 545, 150, 48);
+		frame.getContentPane().add(btnUpdate);
+		
+		JButton btnDelete = new JButton("DELETE");
+		btnDelete.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnDelete.setBounds(718, 545, 150, 48);
+		frame.getContentPane().add(btnDelete);
+	}
+}
